@@ -11,6 +11,7 @@
 var assert = require("chai").assert,
     proxyquire = require("proxyquire"),
     sinon = require("sinon"),
+    path = require("path"),
     rules = require("../../lib/rules"),
     Config = require("../../lib/config");
 
@@ -60,6 +61,18 @@ describe("CLIEngine", function() {
             });
 
             var report = engine.executeOnText("var foo = 'bar';");
+            assert.equal(report.results.length, 1);
+            assert.equal(report.results[0].messages.length, 1);
+            assert.equal(report.results[0].messages[0].ruleId, "quotes");
+        });
+
+        it("should report one message when the config is loaded for the specified path", function() {
+
+            engine = new CLIEngine({
+                reset: true
+            });
+
+            var report = engine.executeOnText("console.log('hello world');", path.join(__dirname, "../fixtures/config-hierarchy/broken/does.not.exist"));
             assert.equal(report.results.length, 1);
             assert.equal(report.results[0].messages.length, 1);
             assert.equal(report.results[0].messages[0].ruleId, "quotes");
